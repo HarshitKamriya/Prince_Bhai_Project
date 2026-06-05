@@ -1,0 +1,191 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
+  passwordHash    String
+  username        String    @unique
+  displayName     String
+  avatarUrl       String?
+  level           Int       @default(1)
+  totalXp         Int       @default(0)
+  xpToNextLevel   Int       @default(1000)
+  currentStreak   Int       @default(0)
+  lastActiveDate  DateTime?
+  role            String    @default("INITIATE")  // INITIATE, ARCHITECT, etc.
+  createdAt       DateTime  @default(now())
+
+  attributes      UserAttribute[]
+  quests          Quest[]
+  tasks           Task[]
+  schedule        ScheduleEntry[]
+  focusSessions   FocusSession[]
+  journalEntries  JournalEntry[]
+  achievements    Achievement[]
+  activityLogs    ActivityLog[]
+  metrics         ProductivityMetric[]
+  consistency     ConsistencyData[]
+  codingProgress  CodingProgress[]
+  habits          Habit[]
+}
+
+model UserAttribute {
+  id              Int    @id @default(autoincrement())
+  userId          Int
+  name            String // DISCIPLINE, FOCUS, KNOWLEDGE, HEALTH, CODING
+  level           Int    @default(1)
+  progressPercent Int    @default(0)
+  user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name])
+}
+
+model Quest {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  title       String
+  description String?
+  xpReward    Int      @default(10)
+  icon        String   @default("code")
+  category    String   @default("coding") // coding, gym, reading, other
+  status      String   @default("active") // active, completed
+  tags        String[] @default([])
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  focusSessions FocusSession[]
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  title       String
+  category    String   // DEEP_WORK, HEALTH, PERSONAL
+  isCompleted Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ScheduleEntry {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  date        DateTime
+  startTime   String   // "06:00"
+  endTime     String   // "07:00"
+  title       String
+  description String?
+  status      String   @default("upcoming") // completed, current, upcoming
+  category    String?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FocusSession {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  questId       Int?
+  duration      Int      // minutes
+  breakDuration Int      @default(5)
+  startTime     DateTime
+  endTime       DateTime?
+  isCompleted   Boolean  @default(false)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quest         Quest?   @relation(fields: [questId], references: [id], onDelete: SetNull)
+}
+
+model JournalEntry {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  date      DateTime @default(now())
+  wentWell  String
+  learned   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Achievement {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  name        String
+  description String?
+  icon        String    @default("emoji_events")
+  color       String    @default("primary")
+  isUnlocked  Boolean   @default(false)
+  unlockedAt  DateTime?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name])
+}
+
+model ActivityLog {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  timestamp   DateTime @default(now())
+  description String
+  type        String   // XP_GAIN, STREAK, BADGE, SYSTEM, FOCUS
+  xpAmount    Int?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ProductivityMetric {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  date             DateTime
+  productiveHours  Float    @default(0)
+  wastedHours      Float    @default(0)
+  focusScore       Int      @default(0)
+  codingPercent    Int      @default(0)
+  gymPercent       Int      @default(0)
+  readingPercent   Int      @default(0)
+  otherPercent     Int      @default(0)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}
+
+model ConsistencyData {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  date      DateTime
+  intensity Int      @default(0) // 0-4
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}
+
+model CodingProgress {
+  id         Int    @id @default(autoincrement())
+  userId     Int
+  platform   String @default("leetcode")
+  difficulty String // easy, medium, hard
+  solved     Int    @default(0)
+  total      Int    @default(100)
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, platform, difficulty])
+}
+
+model Habit {
+  id              Int       @id @default(autoincrement())
+  userId          Int
+  title           String
+  icon            String    @default("repeat")
+  category        String    @default("health")  // health, coding, reading, mindfulness
+  frequency       String    @default("daily")    // daily, weekly
+  targetCount     Int       @default(1)
+  currentStreak   Int       @default(0)
+  bestStreak      Int       @default(0)
+  completedToday  Boolean   @default(false)
+  lastCompletedAt DateTime?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

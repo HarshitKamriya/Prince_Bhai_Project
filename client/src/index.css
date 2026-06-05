@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Geist:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+:root {
+  /* Colors */
+  --background: #020617;
+  --surface: #0b1326;
+  --surface-dim: #0b1326;
+  --surface-bright: #31394d;
+  --surface-container-lowest: #060e20;
+  --surface-container-low: #131b2e;
+  --surface-container: #171f33;
+  --surface-container-high: #222a3d;
+  --surface-container-highest: #2d3449;
+
+  --on-surface: #dae2fd;
+  --on-surface-variant: #bdc8d1;
+  --on-background: #dae2fd;
+
+  --primary: #8ed5ff;
+  --primary-container: #38bdf8;
+  --on-primary: #00354a;
+
+  --secondary: #4ae176;
+  --secondary-container: #00b954;
+  --on-secondary: #003915;
+
+  --tertiary: #ffc174;
+  --tertiary-container: #f59e0b;
+  --on-tertiary: #472a00;
+
+  --error: #ffb4ab;
+  --error-container: #93000a;
+
+  --outline: #87929a;
+  --outline-variant: #3e484f;
+
+  /* Typography */
+  --font-heading: 'Geist', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--on-background);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Glassmorphism primitives */
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(56, 189, 248, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px -10px rgba(56, 189, 248, 0.2);
+}
+
+.glow-text {
+  text-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+}
+
+.glow-border:focus-within {
+  border-color: var(--primary-container);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+}
+
+/* Timeline vertical line */
+.timeline-line {
+  position: relative;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  margin-left: 12px;
+  padding-left: 24px;
+}
+
+/* Scrollbar Utility */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); opacity: 0.2; }
+  50% { transform: translateY(-20px) rotate(5deg); opacity: 0.5; }
+  100% { transform: translateY(0px) rotate(0deg); opacity: 0.2; }
+}
+
+.code-snippet {
+  position: absolute;
+  font-family: var(--font-code);
+  font-size: 10px;
+  color: var(--primary-container);
+  pointer-events: none;
+  z-index: 0;
+  animation: float 8s ease-in-out infinite;
+}
+
+/* Material Symbols settings */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
